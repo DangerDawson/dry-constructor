@@ -33,8 +33,8 @@ module Dry
       # @api private
       def define_initializer(accessors)
         define_method(:initialize) do |hash|
-          hash.select { |key, _value| accessors.include?(key) }.each do |key, value|
-            instance_variable_set("@#{key}", value)
+          hash.each do |key, value|
+            instance_variable_set("@#{key}", value) if accessors.include?(key)
           end
         end
       end
