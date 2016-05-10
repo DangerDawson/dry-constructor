@@ -17,8 +17,8 @@ module Dry
   # @return [Dry::Constructor]
   #
   # @api public
-  def self.Constructor(*accessors)
-    ::Dry::Constructor.new(*accessors)
+  def self.Constructor(accessors)
+    ::Dry::Constructor.new(accessors)
   end
 
   # A simple dependency injection library for Plain Old Ruby Objects
@@ -37,8 +37,8 @@ module Dry
     # @return [Dry::Constructor]
     #
     # @api public
-    def self.Public(*accessors)
-      ::Dry::Constructor.new(*accessors, visibility: :public)
+    def self.Public(accessors)
+      ::Dry::Constructor.new(accessors, visibility: :public)
     end
 
     # Create a new module to include and define an initializer for DI
@@ -55,8 +55,8 @@ module Dry
     # @return [Dry::Constructor]
     #
     # @api public
-    def self.Protected(*accessors)
-      ::Dry::Constructor.new(*accessors, visibility: :protected)
+    def self.Protected(accessors)
+      ::Dry::Constructor.new(accessors, visibility: :protected)
     end
 
     # Initialize an Equalizer with the given keys
@@ -71,7 +71,7 @@ module Dry
     # @return [Dry::Constructor]
     #
     # @api private
-    def initialize(*accessors, visibility: :private)
+    def initialize(accessors, visibility: :private)
       define_included(accessors, visibility)
       define_initializer(accessors)
       freeze
@@ -83,17 +83,19 @@ module Dry
     def define_included(accessors, visibility)
       define_singleton_method(:included) do |descendant|
         super(descendant)
-        descendant.__send__(:attr_reader, *accessors)
-        descendant.__send__(visibility, *accessors)
+        keys = accessors.keys
+        descendant.__send__(:attr_reader, *keys)
+        descendant.__send__(visibility, *keys)
       end
     end
 
     # @api private
     def define_initializer(accessors)
-      define_method(:initialize) do |*args, &_block|
-        accessors.zip(args).each do |key, value|
-          instance_variable_set("@#{key}", value)
-        end
+      define_method(:initialize) do |args={}, &_block|
+        accessors.merge!(args)
+        accessors.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
       end
     end
   end
