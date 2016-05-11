@@ -92,10 +92,10 @@ module Dry
     # @api private
     def define_initializer(accessors)
       define_method(:initialize) do |args={}, &_block|
-        accessors.merge!(args)
-        accessors.each do |key, value|
-        instance_variable_set("@#{key}", value)
-      end
+        combined = accessors.merge(args)
+        combined.each do |key, value|
+          instance_variable_set("@#{key}", value)
+        end
       end
     end
   end

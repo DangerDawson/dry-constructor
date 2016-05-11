@@ -24,9 +24,17 @@ RSpec.describe Dry::Constructor do
     end
 
     context "overide constructor" do
-      let(:instance) { klass.new(three: Four) }
+      let!(:instance) { klass.new(three: Four) }
       it 'assings the supplied value to the construstor arg' do
         expect(instance.__send__(:three)).to eq(Four)
+      end
+
+      context "it does not memoize the passed in args" do
+        let!(:another_instance) { klass.new() }
+        it 'assings the supplied value to the construstor arg' do
+          puts "before instance"
+          expect(another_instance.__send__(:three)).to eq(Three)
+        end
       end
     end
   end
@@ -52,6 +60,13 @@ RSpec.describe Dry::Constructor do
       it 'assings the supplied value to the construstor arg' do
         expect(instance.__send__(:three)).to eq(Four)
       end
+      context "it does not memoize the passed in args" do
+        let!(:another_instance) { klass.new() }
+        it 'assings the supplied value to the construstor arg' do
+          puts "before instance"
+          expect(another_instance.__send__(:three)).to eq(Three)
+        end
+      end
     end
   end
 
@@ -75,6 +90,13 @@ RSpec.describe Dry::Constructor do
       let(:instance) { klass.new(three: Four) }
       it 'assings the supplied value to the construstor arg' do
         expect(instance.three).to eq(Four)
+      end
+      context "it does not memoize the passed in args" do
+        let!(:another_instance) { klass.new() }
+        it 'assings the supplied value to the construstor arg' do
+          puts "before instance"
+          expect(another_instance.__send__(:three)).to eq(Three)
+        end
       end
     end
   end
